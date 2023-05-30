@@ -151,7 +151,13 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
                 .then(doc => vscode.window.showTextDocument(
                     doc,
                     this.getTextDocumentShowOptions(true)
-                ));
+                ))
+                .then((e) => {
+                    const editor = vscode.window.activeTextEditor
+                    if (editor){
+                        editor.selection = new vscode.Selection(3, 52, 3, 52)
+                    }
+                })
         }
     }
 
