@@ -1,0 +1,16 @@
+{
+  "scopeName": "source.dired",
+  "patterns": [
+    {
+        "match": "^  d.*\\s(\\S+/)$",
+        "captures": {
+            "1": {
+                "name": "storage.type.dired.item.directory"
+            }
+        }
+    }
+  ],
+  "fileTypes": [
+    "dired"
+  ]
+}
