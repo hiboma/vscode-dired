@@ -138,8 +138,33 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
         if (!this.dirname || this.dirname === "/") {
             return;
         }
+        const basename = path.basename(this.dirname)
         const p = path.join(this.dirname, "..");
-        this.openDir(p);
+
+        this.openUpDir(p, basename);
+    }
+
+    openUpDir(path: string, basename: string) {
+        const f = new FileItem(path, "", true); // Incomplete FileItem just to get URI.
+        const uri = f.uri;
+        if (uri) {
+            this.createBuffer(path)
+                .then(() => vscode.workspace.openTextDocument(uri))
+                .then(doc => {
+                    vscode.languages.setTextDocumentLanguage(doc, "gemfile");
+                    for (let index = 0; index < this._buffers.length; index++) {
+                        const buffer = this._buffers[index];
+                        if (buffer.endsWith(" " + basename)) {
+                            const pos   = buffer.indexOf(basename)
+                            const range = new vscode.Range(index, pos, index, pos);
+                            return vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(true, range));
+                        }
+                    }
+
+                    const range = new vscode.Range(3, 52, 3, 52);
+                    return vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(true, range));
+                })
+        }
     }
 
     openDir(path: string) {
@@ -148,22 +173,18 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
         if (uri) {
             this.createBuffer(path)
                 .then(() => vscode.workspace.openTextDocument(uri))
-                .then(doc => vscode.window.showTextDocument(
-                    doc,
-                    this.getTextDocumentShowOptions(true)
-                ))
-                .then((e) => {
-                    const editor = vscode.window.activeTextEditor
-                    if (editor){
-                        editor.selection = new vscode.Selection(3, 52, 3, 52)
-                    }
+                .then(doc => {
+                    vscode.languages.setTextDocumentLanguage(doc, "gemfile");
+                    const range = new vscode.Range(3, 52, 3, 52);
+                    return vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(true, range));
                 })
         }
     }
 
     showFile(uri: vscode.Uri) {
         vscode.workspace.openTextDocument(uri).then(doc => {
-            vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(false));
+            const range = new vscode.Range(0, 0, 0, 0);
+            vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(false, range));
         });
         // TODO: show warning when open file failed
         // vscode.window.showErrorMessage(`Could not open file ${uri.fsPath}: ${err}`);
@@ -300,10 +321,11 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
         this._onDidChange.fire(uri);
     }
 
-    private getTextDocumentShowOptions(fixed_window: boolean): vscode.TextDocumentShowOptions {
+    private getTextDocumentShowOptions(fixed_window: boolean, selection: vscode.Range): vscode.TextDocumentShowOptions {
         const opts: vscode.TextDocumentShowOptions = {
             preview: fixed_window,
-            viewColumn: vscode.ViewColumn.Active
+            viewColumn: vscode.ViewColumn.Active,
+            selection: selection,
         };
         return opts;
     }
