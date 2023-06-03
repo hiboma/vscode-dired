@@ -151,11 +151,12 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
             this.createBuffer(path)
                 .then(() => vscode.workspace.openTextDocument(uri))
                 .then(doc => {
-                    vscode.languages.setTextDocumentLanguage(doc, "gemfile");
+                    vscode.languages.setTextDocumentLanguage(doc, "dired");
                     for (let index = 0; index < this._buffers.length; index++) {
                         const buffer = this._buffers[index];
-                        if (buffer.endsWith(" " + basename)) {
-                            const pos   = buffer.indexOf(basename)
+                        const target = " " + basename + "/";
+                        if (buffer.endsWith(target)) {
+                            const pos   = buffer.indexOf(target) + 1;
                             const range = new vscode.Range(index, pos, index, pos);
                             return vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(true, range));
                         }
@@ -174,7 +175,7 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
             this.createBuffer(path)
                 .then(() => vscode.workspace.openTextDocument(uri))
                 .then(doc => {
-                    vscode.languages.setTextDocumentLanguage(doc, "gemfile");
+                    vscode.languages.setTextDocumentLanguage(doc, "dired");
                     const range = new vscode.Range(3, 52, 3, 52);
                     return vscode.window.showTextDocument(doc, this.getTextDocumentShowOptions(true, range));
                 })
