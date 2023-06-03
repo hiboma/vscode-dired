@@ -27,6 +27,17 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "languages": [{
+      "id": "dired",
+      "extensions": [".dired"]
+    }],
+    "grammars": [
+      {
+        "language": "dired",
+        "scopeName": "source.dired",
+        "path": "./syntaxes/dired.tmLanguage.json"
+      }
+    ],
     "commands": [
       {
         "command": "extension.dired.open",

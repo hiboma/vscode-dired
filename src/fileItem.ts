@@ -70,7 +70,13 @@ export default class FileItem {
         if (this._selected) {
             se = "*";
         }
-        return `${se} ${this._modeStr} ${u} ${g} ${size} ${month} ${day} ${hour}:${min} ${this._filename}`;
+
+        var filename = this._filename
+        if (this._isDirectory) {
+            filename = filename + "/";
+        }
+
+        return `${se} ${this._modeStr} ${u} ${g} ${size} ${month} ${day} ${hour}:${min} ${filename}`;
     }
 
     public static parseLine(dir: string, line: string): FileItem {
