@@ -245,9 +245,9 @@ export default class DiredProvider implements vscode.TextDocumentContentProvider
             }
         }).filter((fileItem) => {
             if (fileItem) {
-                if (this._show_dot_files) return true;
                 let filename = fileItem.fileName;
-                if (filename == '..' || filename == '.' ) return true;
+                if (filename == '..' || filename == '.' ) return false;
+                if (this._show_dot_files) return true;
                 return filename.substring(0, 1) != '.';
             } else {
                 return false;
